@@ -11,11 +11,21 @@ namespace Application;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Zend\Session\Container;
 
 class Module
 {
     public function onBootstrap(MvcEvent $e)
     {
+        $container = new Container('userData');
+        $userData = $container->profile;
+        $userRoleData = $container->role;
+        
+        if( !isset($userRoleData) )
+        {
+            $userRoleData[0] = 4;
+            $container->role = $userRoleData;
+        }
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
@@ -34,6 +44,7 @@ class Module
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
             ),
+            'Zend\Loader\ClassMapAutoloader' => array( __DIR__ . '/autoload_classmap.php'),
         );
     }
 }
