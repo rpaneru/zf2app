@@ -1,12 +1,4 @@
 <?php
-/**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
- * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- */
-
 namespace Application;
 
 use Zend\Mvc\ModuleRouteListener;
@@ -17,18 +9,35 @@ class Module
 {
     public function onBootstrap(MvcEvent $e)
     {
-        $container = new Container('userData');
-        $userData = $container->profile;
-        $userRoleData = $container->role;
+        $res = $e->getApplication()->getServiceManager()->get('headerMenu')->getMenu();
         
-        if( !isset($userRoleData) )
+        $routeArray = array();
+        $i = 0;
+        $countOuter = count($res);
+        while($i < $countOuter)
         {
-            $userRoleData[0] = 4;
-            $container->role = $userRoleData;
+            $j = 0;
+            $countInner = count($res[$i]);
+            while($j < $countInner)
+            {
+                array_push($routeArray, $res[$i][$j]['route']);
+                $j++;
+            }
+        $i++;
         }
-        $eventManager        = $e->getApplication()->getEventManager();
-        $moduleRouteListener = new ModuleRouteListener();
-        $moduleRouteListener->attach($eventManager);
+        
+        $uri = ltrim($_SERVER["REQUEST_URI"], "/");
+        
+        if( !in_array($uri, $routeArray) && $uri != '' && $uri != 'auth' )
+        {            
+            echo 'Not Permitted';
+        }
+        else
+        {
+            $eventManager        = $e->getApplication()->getEventManager();
+            $moduleRouteListener = new ModuleRouteListener();
+            $moduleRouteListener->attach($eventManager);
+        }
     }
 
     public function getConfig()

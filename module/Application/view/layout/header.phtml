@@ -22,7 +22,7 @@ $headerMenu = $this->headerMenu->getMenu();
                         while($j < $countInner)
                         {
                         ?>
-                            <li><a href="#"><?php echo $headerMenu[$i][$j]['sub_menu'];?></a></li>                        
+                            <li><a href="<?php echo $headerMenu[$i][$j]['route'];?>"><?php echo $headerMenu[$i][$j]['sub_menu'];?></a></li>                        
                         <?php
                         $j++;
                         }
